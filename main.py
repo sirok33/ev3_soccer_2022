@@ -10,6 +10,7 @@ from pybricks.iodevices import I2CDevice
 from pybricks.iodevices import Ev3devSensor
 import math
 import time
+import sensors
 # Create your objects here.
 ev3 = EV3Brick()
 compass = I2CDevice(Port.S1, 0x01)
@@ -33,26 +34,22 @@ result = compass.read(reg = 0x42, length = 1)
 alpha = int(result[0]) * 2
 stage = 1
 col = False
+sens = sensors.sensor()
 while True:
-    amb = color1.ambient()
+    sens.read()
+    amb, compas, dir, see = sens.read() 
     if amb>25 and see > 120 :
         col = True
         ev3.speaker.beep()
     else:
         col=False
-    t1 = time.time() - time1
-    result = compass.read(reg = 0x42, length = 1)
-    sek_res = seeker.read("AC-ALL")
-    dir = sek_res[0]
-    see = 0
-    see = sek_res[1]+sek_res[2]+sek_res[3]+sek_res[4]+sek_res[5]
-
-    compas = int(result[0]) * 2     
+   
+  
     err = alpha - compas
     er = err / 180
-
+    t1 = time.time() - time1
     if stage == 1:
-        t2 = time.time() - time1
+        
         u = (dir - 5) * ks
     
     
@@ -72,25 +69,32 @@ while True:
         else:
             er = math.ceil(er)
         ucom = kc*(err - er*360)
-        if t1 - t2 > 2 :
+        if t2 > 1.5 :
             stage = 3
         if abs(ucom)>20:
             if ucom>0:
                 ucom=20
             else:
                 ucom = -20
+        if dir != 5 and see  < 120:
+                stage = 1
+                ev3.speaker.beep()
         
         
         if stage == 3:
             motora.dc(100)
-            wait(200)
             motora.dc(-100)
-            wait(200)
             
-
-        if dir != 5 and see  < 120:
-            stage = 1
-            ev3.speaker.beep()
+            if dir == 5 and see  > 120 and col ==True:
+                ev3.speaker.beep()
+                stage = 2
+                
+                t1 = time.time()
+            if dir != 5 and see  < 120:
+                stage = 1
+                ev3.speaker.beep()
+                
+                t1 = time.time()
 
     
     motorb.dc(v+u)
@@ -99,7 +103,8 @@ while True:
     ev3.screen.print(dir)
     ev3.screen.print(see)
     ev3.screen.print(t1)
-    ev3.screen.print(amb)
+    ev3.screen.print(t2)
+    ev3.screen.print(stage)
     wait(10)  
 
 
