@@ -14,10 +14,6 @@ import time
 ev3 = EV3Brick()
 compass = I2CDevice(Port.S1, 0x01)
 seeker = Ev3devSensor(Port.S2)
-motorb = Motor(Port.B)
-motorc = Motor(Port.C)
-motora = Motor(Port.A)
-time1 = time.time()
 color1 = ColorSensor(Port.S3)
 class sensor():
     def read(self):

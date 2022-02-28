@@ -28,8 +28,9 @@ v = 50
 err = 0
 dir = 0
 see = 0
-time_2 = 0
+
 ucom = 0
+timer_dlya_pinalki = 0
 result = compass.read(reg = 0x42, length = 1)
 alpha = int(result[0]) * 2
 stage = 1
@@ -47,7 +48,7 @@ while True:
   
     err = alpha - compas
     er = err / 180
-    time_1 = time.time() - start_time
+   
     if stage == 1:
         
         u = (dir - 5) * ks
@@ -55,6 +56,7 @@ while True:
     
         if dir == 5 and see  > 120 and col ==True:
             ev3.speaker.beep()
+            timer_dlya_pinalki = time.time() - start_time
             stage = 2
     #if err > 100:
        # while err > 90:
@@ -62,15 +64,17 @@ while True:
         #   motorc.dc(45)
     
     elif stage == 2:
+        
         u = ucom
-        time_2 = time.time()- t1
+        
         if er > 0:
             er = math.floor(er)
         else:
             er = math.ceil(er)
         ucom = kc*(err - er*360)
-        if time_2 > 1.5 :
+        if timer_dlya_pinalki > 1.5 :
             stage = 3
+            
         if abs(ucom)>20:
             if ucom>0:
                 ucom=20
@@ -83,18 +87,17 @@ while True:
         
         if stage == 3:
             motora.dc(100)
-            motora.dc(-100)
-            
             if dir == 5 and see  > 120 and col ==True:
                 ev3.speaker.beep()
-                stage = 2
                 
-                t1 = time.time()
+                stage = 2
+
             if dir != 5 and see  < 120:
+                
                 stage = 1
                 ev3.speaker.beep()
                 
-                time_1 = time.time()
+                
 
     
     motorb.dc(v+u)
@@ -102,8 +105,7 @@ while True:
     ev3.screen.clear()
     ev3.screen.print(dir)
     ev3.screen.print(see)
-    ev3.screen.print(time_1)
-    ev3.screen.print(time_2)
+    ev3.screen.print(timer_dlya_pinalki)
     ev3.screen.print(stage)
     wait(10)  
 
