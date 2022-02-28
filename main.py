@@ -18,7 +18,7 @@ seeker = Ev3devSensor(Port.S2)
 motorb = Motor(Port.B)
 motorc = Motor(Port.C)
 motora = Motor(Port.A)
-time1 = time.time()
+start_time = time.time()
 color1 = ColorSensor(Port.S3)
 # Write your program here.
 ev3.speaker.beep()
@@ -28,7 +28,7 @@ v = 50
 err = 0
 dir = 0
 see = 0
-t2 = 0
+time_2 = 0
 ucom = 0
 result = compass.read(reg = 0x42, length = 1)
 alpha = int(result[0]) * 2
@@ -47,7 +47,7 @@ while True:
   
     err = alpha - compas
     er = err / 180
-    t1 = time.time() - time1
+    time_1 = time.time() - start_time
     if stage == 1:
         
         u = (dir - 5) * ks
@@ -63,13 +63,13 @@ while True:
     
     elif stage == 2:
         u = ucom
-        t2 = time.time()- t1
+        time_2 = time.time()- t1
         if er > 0:
             er = math.floor(er)
         else:
             er = math.ceil(er)
         ucom = kc*(err - er*360)
-        if t2 > 1.5 :
+        if time_2 > 1.5 :
             stage = 3
         if abs(ucom)>20:
             if ucom>0:
@@ -94,7 +94,7 @@ while True:
                 stage = 1
                 ev3.speaker.beep()
                 
-                t1 = time.time()
+                time_1 = time.time()
 
     
     motorb.dc(v+u)
@@ -102,8 +102,8 @@ while True:
     ev3.screen.clear()
     ev3.screen.print(dir)
     ev3.screen.print(see)
-    ev3.screen.print(t1)
-    ev3.screen.print(t2)
+    ev3.screen.print(time_1)
+    ev3.screen.print(time_2)
     ev3.screen.print(stage)
     wait(10)  
 
