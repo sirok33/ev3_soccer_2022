@@ -18,7 +18,7 @@ seeker = Ev3devSensor(Port.S2)
 motorb = Motor(Port.B)
 motorc = Motor(Port.C)
 motora = Motor(Port.A)
-start_time = time.time()
+
 color1 = ColorSensor(Port.S3)
 # Write your program here.
 ev3.speaker.beep()
@@ -30,7 +30,6 @@ dir = 0
 see = 0
 
 ucom = 0
-timer_dlya_pinalki = 0
 result = compass.read(reg = 0x42, length = 1)
 alpha = int(result[0]) * 2
 stage = 1
@@ -56,7 +55,6 @@ while True:
     
         if dir == 5 and see  > 120 and col ==True:
             ev3.speaker.beep()
-            timer_dlya_pinalki = time.time() - start_time
             stage = 2
     #if err > 100:
        # while err > 90:
@@ -72,8 +70,7 @@ while True:
         else:
             er = math.ceil(er)
         ucom = kc*(err - er*360)
-        if timer_dlya_pinalki > 1.5 :
-            stage = 3
+        
             
         if abs(ucom)>20:
             if ucom>0:
