@@ -28,7 +28,7 @@ v = 50
 err = 0
 dir = 0
 see = 0
-
+kick_time = 0
 ucom = 0
 result = compass.read(reg = 0x42, length = 1)
 alpha = int(result[0]) * 2
@@ -37,7 +37,7 @@ col = False
 sens = sensors.sensor()
 while True:
     sens.read()
-    amb, compas, dir, see = sens.read() 
+    amb, compas, dir, see, az = sens.read() 
     if amb>25 and see > 120 :
         col = True
         ev3.speaker.beep()
@@ -49,13 +49,29 @@ while True:
     er = err / 180
    
     if stage == 1:
-        
+        motora.dc(0)
         u = (dir - 5) * ks
-    
+        if az > 120 and dir ==7:
+            while az >100:
+                sens.read()
+                u = (dir - 7) * ks
+        else:
+            stage = 1
+                
+        if az > 120 and dir ==3:
+            while az >100:
+                sens.read()
+                u = (dir - 3) * ks
+        else:
+            stage = 1
+
+
+
     
         if dir == 5 and see  > 120 and col ==True:
             ev3.speaker.beep()
             stage = 2
+            start_time = time.time()
     #if err > 100:
        # while err > 90:
         #    motorb.dc(60)
@@ -70,29 +86,28 @@ while True:
         else:
             er = math.ceil(er)
         ucom = kc*(err - er*360)
-        
-            
+        if time.time() - start_time > 1:
+            start_time = time.time()
+            while time.time() - start_time < 0.1:
+                sens.read()
+                motora.dc(100)
+            if dir != 5 and see  < 120:
+                stage = 1
+                
+                ev3.speaker.beep()
+
+
         if abs(ucom)>20:
             if ucom>0:
                 ucom=20
             else:
                 ucom = -20
+        
         if dir != 5 and see  < 120:
                 stage = 1
+                start_time = 0
                 ev3.speaker.beep()
         
-        
-        if stage == 3:
-            motora.dc(100)
-            if dir == 5 and see  > 120 and col ==True:
-                ev3.speaker.beep()
-                
-                stage = 2
-
-            if dir != 5 and see  < 120:
-                
-                stage = 1
-                ev3.speaker.beep()
                 
                 
 
@@ -101,9 +116,10 @@ while True:
     motorc.dc(v-u)
     ev3.screen.clear()
     ev3.screen.print(dir)
+    ev3.screen.print(az)
     ev3.screen.print(see)
-    ev3.screen.print(timer_dlya_pinalki)
     ev3.screen.print(stage)
+    ev3.screen.print(kick_time)
     wait(10)  
 
 
