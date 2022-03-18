@@ -35,33 +35,50 @@ alpha = int(result[0]) * 2
 stage = 1
 col = False
 sens = sensors.sensor()
+
+
 while True:
     sens.read()
-    amb, compas, dir, see, az = sens.read() 
+    amb, compas, dir, see, az, ucom = sens.read() 
     if amb>25 and see > 120 :
         col = True
         ev3.speaker.beep()
     else:
         col=False
-   
-  
-    err = alpha - compas
-    er = err / 180
-   
+
+      
     if stage == 1:
         motora.dc(0)
         u = (dir - 5) * ks
         if az > 120 and dir ==7:
-            while az >100:
+            while az > 90:
                 sens.read()
                 u = (dir - 7) * ks
+                motorb.dc(v+u)
+                motorc.dc(v-u)
+                ev3.screen.clear()
+                ev3.screen.print(dir)
+                ev3.screen.print(az)
+                ev3.screen.print(see)
+                ev3.screen.print(stage)
+                ev3.screen.print(kick_time)
+                wait(10)
         else:
             stage = 1
                 
         if az > 120 and dir ==3:
-            while az >100:
+            while az >90:
                 sens.read()
                 u = (dir - 3) * ks
+                motorb.dc(v+u)
+                motorc.dc(v-u)
+                ev3.screen.clear()
+                ev3.screen.print(dir)
+                ev3.screen.print(az)
+                ev3.screen.print(see)
+                ev3.screen.print(stage)
+                ev3.screen.print(kick_time)
+                wait(10)
         else:
             stage = 1
 
@@ -85,7 +102,7 @@ while True:
             er = math.floor(er)
         else:
             er = math.ceil(er)
-        ucom = kc*(err - er*360)
+        #ucom = kc*(err - er*360)
         if time.time() - start_time > 1:
             start_time = time.time()
             while time.time() - start_time < 0.1:
@@ -107,11 +124,7 @@ while True:
                 stage = 1
                 start_time = 0
                 ev3.speaker.beep()
-        
-                
-                
-
-    
+       
     motorb.dc(v+u)
     motorc.dc(v-u)
     ev3.screen.clear()
@@ -120,6 +133,9 @@ while True:
     ev3.screen.print(see)
     ev3.screen.print(stage)
     ev3.screen.print(kick_time)
-    wait(10)  
+    wait(10)
+                
+
+    
 
 

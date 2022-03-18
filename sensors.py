@@ -35,5 +35,5 @@ class sensor():
             math.ceil(er)
         ucom = err-er*360
         az = abs(ucom)
-        return amb, compas, dir, see, az
+        return amb, compas, dir, see, az,ucom
         
