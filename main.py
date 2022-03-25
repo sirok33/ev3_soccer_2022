@@ -35,9 +35,18 @@ alpha = int(result[0]) * 2
 stage = 1
 col = False
 sens = sensors.sensor()
+def motors(_u, _v ):
+    motorb.dc(_v+_u)
+    motorc.dc(_v-_u)
+    return
 
-
+def debug(*arg):
+    ev3.screen.clear()
+    for arg in args:
+        ev3.screen.print(arg)
+    return
 while True:
+    motors(u, v)
     sens.read()
     amb, compas, dir, see, az, ucom = sens.read() 
     if amb>25 and see > 120 :
@@ -53,6 +62,7 @@ while True:
         if az > 120 and dir ==7:
             while az > 90:
                 sens.read()
+                amb, compas, dir, see, az, ucom = sens.read()
                 u = (dir - 7) * ks
                 motorb.dc(v+u)
                 motorc.dc(v-u)
@@ -69,6 +79,7 @@ while True:
         if az > 120 and dir ==3:
             while az >90:
                 sens.read()
+                amb, compas, dir, see, az, ucom = sens.read()
                 u = (dir - 3) * ks
                 motorb.dc(v+u)
                 motorc.dc(v-u)
@@ -110,7 +121,6 @@ while True:
                 motora.dc(100)
             if dir != 5 and see  < 120:
                 stage = 1
-                
                 ev3.speaker.beep()
 
 
